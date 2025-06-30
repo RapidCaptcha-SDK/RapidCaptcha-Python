@@ -500,4 +500,5 @@ class TestErrorResultParsing:
         result = client.get_result("minimal-error-task")
         
         assert result.is_error
-        assert result.task_id == "minimal-error-
+        assert result.task_id == "minimal-error-task"
+        assert result.reason == "Simple error"

@@ -82,9 +82,9 @@ class CaptchaResult:
     def __str__(self) -> str:
         if self.is_success:
             token = self.token or self.turnstile_value
-            return f"CaptchaResult(SUCCESS, token={token[:20]}..., time={self.elapsed_time_seconds}s)"
+            return f"CaptchaResult(SUCCESS, task_id={self.task_id}, token={token[:20]}..., time={self.elapsed_time_seconds}s)"
         elif self.is_error:
-            return f"CaptchaResult(ERROR, reason={self.reason})"
+            return f"CaptchaResult(ERROR, task_id={self.task_id}, reason={self.reason})"
         else:
             return f"CaptchaResult(PENDING, task_id={self.task_id})"
 
@@ -153,8 +153,13 @@ class RapidCaptchaClient:
         Raises:
             APIKeyError: If API key format is invalid
         """
-        if not api_key or not api_key.startswith("Rapidcaptcha-"):
-            raise APIKeyError("Invalid API key format. Must start with 'Rapidcaptcha-'")
+        if (
+            not isinstance(api_key, str)
+            or not api_key
+            or not api_key.startswith("Rapidcaptcha-")
+            or api_key == "Rapidcaptcha-"
+        ):
+            raise APIKeyError("Invalid API key format. Must start with 'Rapidcaptcha-' and have a non-empty suffix")
         
         self.api_key = api_key
         self.base_url = base_url.rstrip('/')
